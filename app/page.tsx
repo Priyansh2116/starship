@@ -1,5 +1,7 @@
 import React from 'react';
 import Speedometer from '../components/Speedometer'; // Updated import path
+import Stopwatch from '../components/Stopwatch'; // Default import
+
 
 const DashboardPage: React.FC = () => {
   return (
@@ -66,11 +68,13 @@ const DashboardPage: React.FC = () => {
             <Speedometer />
             <p className="mt-2 text-sm">Speedometer</p>
           </div>
+
           {/* Stopwatch */}
           <div className="text-center">
-            <img src="/path/to/stopwatch.png" alt="Stopwatch" className="w-24 h-24 mx-auto" />
+            <Stopwatch />
             <p className="mt-2 text-sm">Stopwatch</p>
           </div>
+
           {/* Compass */}
           <div className="text-center">
             <img src="/path/to/compass.png" alt="Compass" className="w-24 h-24 mx-auto" />
