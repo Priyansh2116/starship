@@ -34,8 +34,8 @@ const DashboardPage: React.FC = () => {
         {/* Camera Feed and Instruments */}
         <div className="grid grid-cols-3 gap-4">
           {/* Main Camera View */}
-          <div className="col-span-2 relative">
-            <img src="/path/to/main-camera-image.jpg" alt="Front View" className="w-full h-full object-cover rounded" />
+          <div className="col-span-2 relative h-96">
+            <img src="/main-camera-image.jpg" alt="Front View" className="w-full h-full object-cover rounded" />
             <span className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
               Scale
             </span>
@@ -62,7 +62,7 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Instruments */}
-        <div className="flex justify-around items-center mt-4">
+        <div className="flex justify-around items-center mt-8">
           {/* Speedometer Component */}
           <div className="text-center">
             <Speedometer />
