@@ -1,7 +1,7 @@
 import React from 'react';
 import Speedometer from '../components/Speedometer'; // Updated import path
 import Stopwatch from '../components/Stopwatch'; // Default import
-
+import Compass from '../components/Compass';//import compass
 
 const DashboardPage: React.FC = () => {
   return (
@@ -77,7 +77,7 @@ const DashboardPage: React.FC = () => {
 
           {/* Compass */}
           <div className="text-center">
-            <img src="/path/to/compass.png" alt="Compass" className="w-24 h-24 mx-auto" />
+            <Compass />
             <p className="mt-2 text-sm">Compass</p>
           </div>
         </div>
