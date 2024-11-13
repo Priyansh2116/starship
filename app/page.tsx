@@ -1,5 +1,5 @@
-// Import necessary modules
 import React from 'react';
+import Speedometer from '../components/Speedometer'; // Updated import path
 
 const DashboardPage: React.FC = () => {
   return (
@@ -61,9 +61,9 @@ const DashboardPage: React.FC = () => {
 
         {/* Instruments */}
         <div className="flex justify-around items-center mt-4">
-          {/* Speedometer */}
+          {/* Speedometer Component */}
           <div className="text-center">
-            <img src="/path/to/speedometer.png" alt="Speedometer" className="w-24 h-24 mx-auto" />
+            <Speedometer />
             <p className="mt-2 text-sm">Speedometer</p>
           </div>
           {/* Stopwatch */}
