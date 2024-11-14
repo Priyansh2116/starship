@@ -1,8 +1,8 @@
 import React from 'react';
-import Speedometer from '../components/Speedometer'; // Updated import path
-import Stopwatch from '../components/Stopwatch'; // Default import
-import Compass from '../components/Compass';//import compass
-
+import Speedometer from '../components/Speedometer'; 
+import Stopwatch from '../components/Stopwatch';
+import Compass from '../components/Compass';
+import Camera from '../components/Camera';
 const DashboardPage: React.FC = () => {
   return (
     <div className="flex h-screen">
@@ -34,8 +34,8 @@ const DashboardPage: React.FC = () => {
         {/* Camera Feed and Instruments */}
         <div className="grid grid-cols-3 gap-4">
           {/* Main Camera View */}
-          <div className="col-span-2 relative h-96">
-            <img src="/main-camera-image.jpg" alt="Front View" className="w-full h-full object-cover rounded" />
+          <div className="col-span-2 relative">
+            <Camera />
             <span className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
               Scale
             </span>
@@ -62,22 +62,20 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Instruments */}
-        <div className="flex justify-around items-center mt-8">
+        <div className="flex justify-around items-center mt-4">
           {/* Speedometer Component */}
           <div className="text-center">
             <Speedometer />
             <p className="mt-2 text-sm">Speedometer</p>
           </div>
-
           {/* Stopwatch */}
           <div className="text-center">
-            <Stopwatch />
+           <Stopwatch/>
             <p className="mt-2 text-sm">Stopwatch</p>
           </div>
-
           {/* Compass */}
           <div className="text-center">
-            <Compass />
+            <Compass/>
             <p className="mt-2 text-sm">Compass</p>
           </div>
         </div>
