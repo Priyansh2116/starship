@@ -10,10 +10,22 @@ wss.on('connection',(ws)  =>   {
     (async () => {
         for await (const message of sock) {
             console.log("Received message from ZeroMQ:", message);
-            if (message) {
-                const speed = message.toString().replace('speed ', '');
-                console.log(`Processed speed: ${speed}`);
-                ws.send(speed);
+            if (msgString.startsWith("speed ")) {
+                const speed = msgString.replace("speed ", "");
+                console.log(`Received Speed: ${speed}`);
+                broadcastToClients({ type: "speed", value: speed });
+            }
+            
+            if (msgString.startsWith("camera ")) {
+                const frame = msgString.replace("camera ", "");
+                console.log("Received Camera Frame");
+                broadcastToClients({ type: "camera", value: frame });
+            }
+    
+            if (msgString.startsWith("compass ")) {
+                const compass = msgString.replace("compass ", "");
+                console.log(`Received Compass: ${compass}`);
+                broadcastToClients({ type: "compass", value: compass });
             }
         }
     })();

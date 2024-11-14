@@ -1,19 +1,45 @@
-'use client'; // Ensure this is a client component
-
-import React from 'react';
+"use client"
+import React, { useEffect, useState } from 'react';
 
 const Compass: React.FC = () => {
+  const [compassDegree, setCompassDegree] = useState<number>(0);
+
+  // WebSocket connection to receive compass data
+  useEffect(() => {
+    const ws = new WebSocket('ws://127.0.0.1:8786');  // Connect to the WebSocket server
+
+    ws.onopen = () => {
+      console.log("Connected to WebSocket server");
+    };
+
+    ws.onmessage = (event) => {
+      const degree = parseFloat(event.data);  // Parse the degree value from WebSocket message
+      setCompassDegree(degree);  // Update compass degree state
+    };
+
+    ws.onclose = () => {
+      console.log("Disconnected from WebSocket server");
+    };
+
+    return () => {
+      ws.close();  // Cleanup WebSocket connection on component unmount
+    };
+  }, []);
+
+  // Calculate needle rotation
+  const needleRotation = `rotate(${compassDegree}deg)`;
+
   return (
     <div className="compass-container text-center">
       <div className="compass">
-        <div className="needle"></div>
-        
+        <div className="needle" style={{ transform: needleRotation }}></div>
+
         {/* Degree and Cardinal Direction Notations */}
         <div className="compass-label north">N</div>
         <div className="compass-label east">E</div>
         <div className="compass-label south">S</div>
         <div className="compass-label west">W</div>
-        
+
         {/* Intermediate Directions */}
         <div className="compass-label northeast">NE</div>
         <div className="compass-label southeast">SE</div>
@@ -54,7 +80,6 @@ const Compass: React.FC = () => {
           background-color: red;
           top: 20px;
           transform-origin: 50% 100%;
-          animation: rotate-needle 2s infinite linear;
         }
 
         /* Compass labels */
@@ -132,16 +157,6 @@ const Compass: React.FC = () => {
           left: 25px;
           top: 50%;
           transform: translateY(-50%);
-        }
-
-        /* Animate the needle rotation to simulate direction */
-        @keyframes rotate-needle {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
         }
 
         p {
