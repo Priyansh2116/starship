@@ -7,6 +7,17 @@ const Compass: React.FC = () => {
     <div className="compass-container text-center">
       <div className="compass">
         <div className="needle"></div>
+        
+        {/* Degree and Cardinal Direction Notations */}
+        <div className="compass-label north">N</div>
+        <div className="compass-label east">E</div>
+        <div className="compass-label south">S</div>
+        <div className="compass-label west">W</div>
+        
+        <div className="compass-label degree-0">0°</div>
+        <div className="compass-label degree-90">90°</div>
+        <div className="compass-label degree-180">180°</div>
+        <div className="compass-label degree-270">270°</div>
       </div>
       <p className="mt-2 text-sm">Compass</p>
 
@@ -37,6 +48,63 @@ const Compass: React.FC = () => {
           top: 20px;
           transform-origin: 50% 100%;
           animation: rotate-needle 2s infinite linear;
+        }
+
+        /* Compass labels */
+        .compass-label {
+          position: absolute;
+          font-size: 14px;
+          font-weight: bold;
+          color: #333;
+        }
+
+        /* Positioning the labels */
+        .north {
+          top: 5px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .east {
+          right: 5px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        .south {
+          bottom: 5px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .west {
+          left: 5px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        .degree-0 {
+          top: 25px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .degree-90 {
+          right: 25px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        .degree-180 {
+          bottom: 25px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .degree-270 {
+          left: 25px;
+          top: 50%;
+          transform: translateY(-50%);
         }
 
         /* Animate the needle rotation to simulate direction */
