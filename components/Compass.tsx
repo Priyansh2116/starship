@@ -14,6 +14,13 @@ const Compass: React.FC = () => {
         <div className="compass-label south">S</div>
         <div className="compass-label west">W</div>
         
+        {/* Intermediate Directions */}
+        <div className="compass-label northeast">NE</div>
+        <div className="compass-label southeast">SE</div>
+        <div className="compass-label southwest">SW</div>
+        <div className="compass-label northwest">NW</div>
+
+        {/* Degree Labels */}
         <div className="compass-label degree-0">0°</div>
         <div className="compass-label degree-90">90°</div>
         <div className="compass-label degree-180">180°</div>
@@ -81,6 +88,26 @@ const Compass: React.FC = () => {
           left: 5px;
           top: 50%;
           transform: translateY(-50%);
+        }
+
+        .northeast {
+          top: 20px;
+          right: 20px;
+        }
+
+        .southeast {
+          bottom: 20px;
+          right: 20px;
+        }
+
+        .southwest {
+          bottom: 20px;
+          left: 20px;
+        }
+
+        .northwest {
+          top: 20px;
+          left: 20px;
         }
 
         .degree-0 {
