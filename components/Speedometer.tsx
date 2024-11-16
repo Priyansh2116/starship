@@ -9,27 +9,23 @@ import Speedometer, {
   Marks,
   Indicator,
 } from "react-speedometer";
-
 const SpeedometerComponent = () => {
   const [speed, setSpeed] = useState(0);
-
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8786");
 
     socket.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data); // Parse incoming message as JSON
+        const data = JSON.parse(event.data);
         if (data.type === "speed") {
-          setSpeed(parseInt(data.value, 10)); // Update speed state
+          setSpeed(parseInt(data.value, 10)); 
         }
       } catch (err) {
         console.error("Error parsing WebSocket message:", err);
       }
     };
-
     return () => socket.close();
   }, []);
-
   return (
     <Speedometer value={speed} fontFamily="squada-one">
       <Background />
