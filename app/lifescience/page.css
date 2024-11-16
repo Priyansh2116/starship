@@ -1,0 +1,13 @@
+/* DashboardPage.css or global.css */
+.camera-feed {
+    width: 700px; /* Adjust width as needed */
+    height: 400px; /* Adjust height as needed */
+    border: 2px solid #ccc; /* Optional: Add border for styling */
+    overflow: hidden;
+    margin: 0 auto; /* Center the camera feed */
+  }
+  
+  .camera-feed video {
+    width: 100%; /* Ensure video scales with the container */
+    height: auto; /* Maintain aspect ratio */
+  }

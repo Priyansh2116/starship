@@ -1,10 +1,9 @@
 import React from 'react';
-import Link from 'next/link';
-import Speedometer from '../components/Speedometer'; 
-import Stopwatch from '../components/Stopwatch';
-import Compass from '../components/Compass';
-import Camera from '../components/Camera';
-import './page.css';
+import Speedometer from '../../components/Speedometer'; 
+import Stopwatch from '../../components/Stopwatch';
+import Compass from '../../components/Compass';
+import Camera from '../../components/Camera';
+import '././page.css';
 
 const DashboardPage: React.FC = () => {
   return (
@@ -20,7 +19,7 @@ const DashboardPage: React.FC = () => {
               <Camera type="rear" /> {/* Assuming you have a Camera component to handle different types of views */}
             </div>
             <span className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
-              Rear View
+              Biobox view
             </span>
           </div>
           {/* Arm View */}
@@ -29,7 +28,7 @@ const DashboardPage: React.FC = () => {
               <Camera type="arm" /> {/* Assuming this Camera component handles multiple types of camera views */}
             </div>
             <span className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
-              Arm View
+              Test-tube view
             </span>
           </div>
         </div>
@@ -39,14 +38,10 @@ const DashboardPage: React.FC = () => {
       <div className="flex-1 p-4 space-y-4">
         {/* Header */}
         <div className="flex justify-between items-center bg-black text-white px-6 py-3 rounded-lg">
-      <Link href="/lifescience">
-        <button className="bg-gray-700 px-4 py-2 rounded">
-          LifeSciences
-        </button>
-      </Link>
-      <span>Rover Control</span>
-      <div className="bg-gray-700 w-8 h-8 rounded-full" />
-    </div>
+          <span>BioBox Readings</span>
+          <div className="bg-gray-700 w-8 h-8 rounded-full" />
+        </div>
+
         {/* Camera Feed and Instruments */}
         <div className="grid grid-cols-3 gap-4">
           {/* Main Camera View */}
@@ -60,16 +55,20 @@ const DashboardPage: React.FC = () => {
           {/* Position Info */}
           <div className="space-y-4">
             <div>
-              <label className="text-gray-500">Latitude</label>
-              <div className="bg-gray-200 rounded p-2 text-gray-800">20.667409</div>
+              <label className="text-gray-500">Sensor 1</label>
+              <div className="bg-gray-200 rounded p-2 text-gray-800">-</div>
             </div>
             <div>
-              <label className="text-gray-500">Longitude</label>
-              <div className="bg-gray-200 rounded p-2 text-gray-800">-103.464555</div>
+              <label className="text-gray-500">Sensor 2</label>
+              <div className="bg-gray-200 rounded p-2 text-gray-800">-</div>
             </div>
             <div>
-              <label className="text-gray-500">Elevation</label>
+              <label className="text-gray-500">Sensor 3</label>
               <div className="bg-gray-200 rounded p-2 text-gray-800">--</div>
+            </div>
+            <div>
+            <label className="text-gray-500">Sensor 4</label>
+            <div className="bg-gray-200 rounded p-2 text-gray-800">--</div>
             </div>
           </div>
         </div>
@@ -78,18 +77,18 @@ const DashboardPage: React.FC = () => {
         <div className="flex justify-around items-center mt-4">
           {/* Speedometer Component */}
           <div className="text-center">
-            <Speedometer />
-            <p className="mt-2 text-sm">Speedometer</p>
+            Chart 1
+            <p className="mt-2 text-sm">Gas-Sesnor</p>
           </div>
           {/* Stopwatch */}
           <div className="text-center">
-           <Stopwatch/>
-            <p className="mt-2 text-sm">Stopwatch</p>
+           Chart 2
+            <p className="mt-2 text-sm">Humidity Sesnsor</p>
           </div>
           {/* Compass */}
           <div className="text-center">
-            <Compass/>
-            <p className="mt-2 text-sm">Compass</p>
+            Chart 3
+            <p className="mt-2 text-sm">Any Sesnsor</p>
           </div>
         </div>
       </div>
