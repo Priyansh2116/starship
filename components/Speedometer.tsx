@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Speedometer, {
   Background,
   Arc,
@@ -9,21 +8,25 @@ import Speedometer, {
   Progress,
   Marks,
   Indicator,
-} from 'react-speedometer';
+} from "react-speedometer";
 
 const SpeedometerComponent = () => {
   const [speed, setSpeed] = useState(0);
 
   useEffect(() => {
-  
     const socket = new WebSocket("ws://localhost:8786");
 
     socket.onmessage = (event) => {
-      const receivedSpeed = parseInt(event.data, 10);
-      setSpeed(receivedSpeed);
+      try {
+        const data = JSON.parse(event.data); // Parse incoming message as JSON
+        if (data.type === "speed") {
+          setSpeed(parseInt(data.value, 10)); // Update speed state
+        }
+      } catch (err) {
+        console.error("Error parsing WebSocket message:", err);
+      }
     };
 
-    
     return () => socket.close();
   }, []);
 
@@ -40,3 +43,4 @@ const SpeedometerComponent = () => {
 };
 
 export default SpeedometerComponent;
+

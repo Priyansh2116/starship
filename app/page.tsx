@@ -3,6 +3,8 @@ import Speedometer from '../components/Speedometer';
 import Stopwatch from '../components/Stopwatch';
 import Compass from '../components/Compass';
 import Camera from '../components/Camera';
+import './page.css';
+
 const DashboardPage: React.FC = () => {
   return (
     <div className="flex h-screen">
@@ -11,14 +13,24 @@ const DashboardPage: React.FC = () => {
         <h1 className="text-lg font-bold mb-4">Camera Feed</h1>
         {/* Camera Views */}
         <div className="space-y-4">
-          {['Isometric View', 'Rear View', 'Arm View', 'Side View'].map((view, index) => (
-            <div key={index} className="relative">
-              <img src="/path/to/sample-image.jpg" alt={`${view} Image`} className="w-full h-24 object-cover rounded" />
-              <span className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
-                {view}
-              </span>
+          {/* Rear View */}
+          <div className="relative">
+            <div> {/* Add the Rear View Component or whatever camera feed you want */}
+              <Camera type="rear" /> {/* Assuming you have a Camera component to handle different types of views */}
             </div>
-          ))}
+            <span className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
+              Rear View
+            </span>
+          </div>
+          {/* Arm View */}
+          <div className="relative">
+            <div> {/* Add the Arm View Component or camera feed here */}
+              <Camera type="arm" /> {/* Assuming this Camera component handles multiple types of camera views */}
+            </div>
+            <span className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
+              Arm View
+            </span>
+          </div>
         </div>
       </div>
 
@@ -35,13 +47,10 @@ const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-3 gap-4">
           {/* Main Camera View */}
           <div className="col-span-2 relative">
-            <Camera />
-            <span className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
-              Scale
-            </span>
-            <span className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
-              Front View
-            </span>
+            {/* Apply a custom class to resize the camera */}
+            <div className="camera-feed">
+              <Camera />
+            </div>
           </div>
 
           {/* Position Info */}

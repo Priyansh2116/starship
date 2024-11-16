@@ -1,20 +1,24 @@
-"use client"
+"use client";
+
 import React, { useEffect, useState } from 'react';
 
 const Compass: React.FC = () => {
   const [compassDegree, setCompassDegree] = useState<number>(0);
 
-  // WebSocket connection to receive compass data
   useEffect(() => {
-    const ws = new WebSocket('ws://127.0.0.1:8786');  // Connect to the WebSocket server
+    const ws = new WebSocket('ws://127.0.0.1:8786');
 
     ws.onopen = () => {
       console.log("Connected to WebSocket server");
     };
 
     ws.onmessage = (event) => {
-      const degree = parseFloat(event.data);  // Parse the degree value from WebSocket message
-      setCompassDegree(degree);  // Update compass degree state
+      const data = JSON.parse(event.data); // Ensure the data is parsed correctly
+      if (data.type === "compass") {
+        const degree = parseFloat(data.value);
+        setCompassDegree(degree);
+        console.log(`Received Compass Degree: ${degree}°`);
+      }
     };
 
     ws.onclose = () => {
@@ -22,11 +26,10 @@ const Compass: React.FC = () => {
     };
 
     return () => {
-      ws.close();  // Cleanup WebSocket connection on component unmount
+      ws.close();
     };
   }, []);
 
-  // Calculate needle rotation
   const needleRotation = `rotate(${compassDegree}deg)`;
 
   return (
@@ -34,7 +37,7 @@ const Compass: React.FC = () => {
       <div className="compass">
         <div className="needle" style={{ transform: needleRotation }}></div>
 
-        {/* Degree and Cardinal Direction Notations */}
+        {/* Cardinal Directions */}
         <div className="compass-label north">N</div>
         <div className="compass-label east">E</div>
         <div className="compass-label south">S</div>
@@ -52,7 +55,9 @@ const Compass: React.FC = () => {
         <div className="compass-label degree-180">180°</div>
         <div className="compass-label degree-270">270°</div>
       </div>
-      <p className="mt-2 text-sm">Compass</p>
+
+      {/* Display Degree */}
+      <p className="mt-2 text-sm">Current Degree: {compassDegree.toFixed(2)}°</p>
 
       <style jsx>{`
         .compass-container {
@@ -168,3 +173,4 @@ const Compass: React.FC = () => {
 };
 
 export default Compass;
+
