@@ -3,6 +3,7 @@ import Speedometer from '../../components/Speedometer';
 import Stopwatch from '../../components/Stopwatch';
 import Compass from '../../components/Compass';
 import Camera from '../../components/Camera';
+import GasSensor from '../../components/Gassesnor';
 import '././page.css';
 
 const DashboardPage: React.FC = () => {
@@ -56,7 +57,7 @@ const DashboardPage: React.FC = () => {
           <div className="space-y-4">
             <div>
               <label className="text-gray-500">Sensor 1</label>
-              <div className="bg-gray-200 rounded p-2 text-gray-800">-</div>
+              <div className="bg-gray-200 rounded p-2 text-gray-800"><GasSensor/></div>
             </div>
             <div>
               <label className="text-gray-500">Sensor 2</label>

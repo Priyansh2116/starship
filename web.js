@@ -32,6 +32,11 @@ function broadcastToClients(data) {
             console.log(`Received Compass: ${compass}`);
             broadcastToClients({ type: "compass", value: compass });
         }
+        if (msgString.startsWith("gasvalue ")) {
+            const gasvalue = msgString.replace("gasvalue ", "");
+            console.log(`Received gasvalue: ${gasvalue}`);
+            broadcastToClients({ type: "gasvalue", value: gasvalue });
+        }
     }
 })();
 wss.on('connection', (ws) => {
