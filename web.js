@@ -37,10 +37,41 @@ function broadcastToClients(data) {
             console.log(`Received gasvalue: ${gasvalue}`);
             broadcastToClients({ type: "gasvalue", value: gasvalue });
         }
+	if (msgString.startsWith("spectroscopy ")) {
+            const spectroscopyStr = msgString.replace("spectroscopy ", "");
+            try {
+                const spectroscopy = JSON.parse(spectroscopyStr);
+                console.log("Received Spectroscopy Data:", spectroscopy);
+                if (Array.isArray(spectroscopy)) {
+                    broadcastToClients({ type: "spectroscopy", value: spectroscopy });
+                } else {
+                    console.error("Spectroscopy data is not an array");
+                }
+            } catch (error) {
+                console.error("Error parsing spectroscopy data:", error);
+            }
+        }
     }
 })();
 wss.on('connection', (ws) => {
     console.log("New WebSocket client connected");
+
+
+    ws.on('message', (message) => {
+        try {
+            const msg = JSON.parse(message);
+
+            if (msg.command === "start_spectroscopy") {
+                console.log("Received request to start spectroscopy");
+                const reqSocket = zmq.socket("push");
+                reqSocket.connect("tcp://127.0.0.1:5556"); // Connect to the PUSH endpoint
+                reqSocket.send("capture_spectroscopy");
+                reqSocket.close();
+            }
+        } catch (error) {
+            console.error("Error parsing WebSocket message:", error);
+        }
+    });
 
     ws.on('close', () => {
         console.log("WebSocket client disconnected");

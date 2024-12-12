@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start:all": "concurrently \"pip install -r requirements.txt && python subscriber.py\" \"node web.js\" \"npm run dev\""
   },
   "dependencies": {
     "chart.js": "^4.4.6",
@@ -22,6 +23,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "concurrently": "^7.6.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
