@@ -1,36 +1,13 @@
 "use client"
 import React from 'react';
-import Spectroscopy from '../../components/spectroscopy'; 
+import Spectrograph from '../../components/Spectrograph';  // Fixed quotation mark
 import Stopwatch from '../../components/Stopwatch';
 import Compass from '../../components/Compass';
 import Camera from '../../components/Camera';
 import GasSensor from '../../components/Gassesnor';
 import '././page.css';
 
-const DashboardPage: React.FC = () => {
-  const handleSpectroscopyClick = () => {
-    // Create a WebSocket connection
-    const ws = new WebSocket('ws://localhost:8786');
-
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-      // Send a request to initiate spectroscopy data capture
-      ws.send(JSON.stringify({ command: 'start_spectroscopy' }));
-    };
-
-    ws.onmessage = (event) => {
-      console.log('Received data from server:', event.data);
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket closed');
-    };
-  };
-
+const DashboardPage: React.FC = () => {  // Added component declaration
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -71,6 +48,7 @@ const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-3 gap-4">
           {/* Main Camera View */}
           <div className="col-span-2 relative">
+            {/* Apply a custom class to resize the camera */}
             <div className="camera-feed">
               <Camera />
             </div>
@@ -80,7 +58,7 @@ const DashboardPage: React.FC = () => {
           <div className="space-y-4">
             <div>
               <label className="text-gray-500">Sensor 1</label>
-              <div className="bg-gray-200 rounded p-2 text-gray-800"><GasSensor/></div>
+              <div className="bg-gray-200 rounded p-2 text-gray-800"><GasSensor /></div>
             </div>
             <div>
               <label className="text-gray-500">Sensor 2</label>
@@ -94,20 +72,20 @@ const DashboardPage: React.FC = () => {
               <label className="text-gray-500">Sensor 4</label>
               <div className="bg-gray-200 rounded p-2 text-gray-800">--</div>
             </div>
+            <div>
+              <label className="text-gray-500">Sensor 5</label>
+              <div className="bg-gray-200 rounded p-2 text-gray-800">--</div>
+            </div>
           </div>
         </div>
 
         {/* Instruments */}
         <div className="flex justify-around items-center mt-4">
-          {/* Spectroscopy Button */}
           <div className="text-center">
-            <button
-              onClick={handleSpectroscopyClick}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Start Spectroscopy
-            </button>
-            <p className="mt-2 text-sm">Click to initiate spectroscopy</p>
+            <p className="mt-2 text-sm">Spectroscopy Data</p>
+            <div className="chart-container mt-4">
+              <Spectrograph />
+            </div>
           </div>
         </div>
       </div>
@@ -116,4 +94,3 @@ const DashboardPage: React.FC = () => {
 };
 
 export default DashboardPage;
-

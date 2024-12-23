@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "start:all": "concurrently \"pip install -r requirements.txt && python subscriber.py\" \"node web.js\" \"npm run dev\""
+    "start:all": "concurrently \"pip install -r requirements.txt && python pubs.py\" \"node web.js\" \"npm run dev\""
   },
   "dependencies": {
     "chart.js": "^4.4.6",
@@ -16,6 +16,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-speedometer": "^0.1.2",
+    "recharts": "^2.15.0",
     "ws": "^8.18.0",
     "zeromq": "^6.1.2"
   },

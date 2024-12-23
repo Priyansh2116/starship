@@ -28,7 +28,7 @@ const Camera: React.FC = () => {
         <div>
             <h1>Camera Feed</h1>
             {frame ? (
-                <img src={frame} alt="Camera Feed" style={{ width: '100%', height: 'auto' }} />
+                <img src={frame} alt="Camera Feed" style={{ width: '100%', height: '100%' }} />
             ) : (
                 <p>Loading camera feed...</p>
             )}
