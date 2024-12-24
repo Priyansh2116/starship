@@ -23,7 +23,7 @@ class InverseMsg(ctypes.Structure):
         ("z", ctypes.c_double)
     ]
 
-class RobotData(ctypes.Structure):
+class Rover_data(ctypes.Structure):
     _fields_ = [
         ("joint", Joint),
         ("inverse", InverseMsg),

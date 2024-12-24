@@ -52,7 +52,7 @@ while True:
         # Camera frames
         ret, frame = camera.read()
         if ret:
-            _, buffer = cv2.imencode('.jpg', frame1)
+            _, buffer = cv2.imencode('.jpg', frame)
             frame_encoded = base64.b64encode(buffer).decode('utf-8')
             socket.send_string(f"camera {frame_encoded}")
         
