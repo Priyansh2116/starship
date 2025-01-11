@@ -22,7 +22,7 @@ const GasSensor = () => {
   }, []);
 
   return (
-    <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
+    <div style={{ padding: '30px', border: '1px solid #ddd', borderRadius: '5px' }}>
       {gasvalue !== null ? (
         <p>Sensor 1: <strong>{gasvalue}</strong></p>
       ) : (

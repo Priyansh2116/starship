@@ -44,6 +44,8 @@ const DashboardPage: React.FC = () => {
           <GasSensor />
           <GasSensor />
           <GasSensor />
+          <GasSensor />
+          <GasSensor />
         </div>
 
         {/* Spectroscopy */}
