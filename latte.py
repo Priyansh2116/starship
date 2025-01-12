@@ -1,103 +1,117 @@
-import struct
 import serial
+import time
 from pyubx2 import UBXReader
 from cobs import cobs
+import binascii
 import zlib
 import zmq
 import ctypes
 
-context=zmq.Context()
-socket=context.socket(zmq.PUB)
-socket.bind("tcp://*:5556")
+# context = zmq.Context()
+# socket = context.socket(zmq.PUB)
+# socket.bind("tcp://*:5556")
 
-class BaseStationData(ctypes.Structure):
-    _fields_  = [
-            ("gps_msg", ctypes,c_char*100),
-            ("accel",ctypes.c_double),
-            ("compass",ctypes.c_double),
-            ("msg_status",ctypes.c_uint32),
-            ("crc",ctypes.c_uint32),
-        ]
 
 def gpsubx(ubx_data):
     try:
         stream = UBXReader.parse(ubx_data)
         return stream
-    error Exception as e:
-        print(f"error publishing:{e]")
+    except Exception as e:
+        print(f"error publishing:{e}")
 
 
-def calccrc(data):
-    return zlib.crc32(data) & 0xFFFFFFFF
+def chmsg(error_mssg_flag):
+    mssg = ""
+    if error_mssg_flag & 0x0001 == 0x0001:
+        mssg = mssg+"Error: Corrupt SBUS Packet"
+    if error_mssg_flag & 0x0002 == 0x0002:
+        mssg = mssg+"Error: COBS Decode Failed"
+    if error_mssg_flag & 0x0004 == 0x0004:
+        mssg = mssg+"Error: Message from Latte Panda is corrupt"
+    if error_mssg_flag & 0x0008 == 0x0008:
+        mssg = mssg+"Error: COBS Encoding Failed"
+    if error_mssg_flag & 0x0010 == 0x0010:
+        mssg = mssg+"Error: Unable to write PWM pulse to Left Motor"
+    if error_mssg_flag & 0x0020 == 0x0020:
+        mssg = mssg+"Error: Unable to write PWM pulse to Right Motor"
+    if error_mssg_flag & 0x0040 == 0x0040:
+        mssg = mssg+"Error: Unable to write to Gripper/Bio-Arm"
+    if error_mssg_flag & 0x0080 == 0x0080:
+        mssg = mssg+"Error: Unable to write to Tilt Servo"
+    if error_mssg_flag & 0x0100 == 0x0100:
+        mssg = mssg+"Error: Unable to write to Pan Servo"
+    if error_mssg_flag & 0x0200 == 0x0200:
+        mssg = mssg+"Error: Unable to write to Linear Actuator 1"
+    if error_mssg_flag & 0x0400 == 0x0400:
+        mssg = mssg+"Error: Unable to write to Linear Actuator 2"
+    if error_mssg_flag & 0x0800 == 0x0800:
+        mssg = mssg+"Error: Unable to write to to Mini-Acc/ABox"
+    if error_mssg_flag & 0x1000 == 0x1000:
+        mssg = mssg+"Error: No data from imu_lower_joint"
+    if error_mssg_flag & 0x2000 == 0x2000:
+        mssg = mssg+"Error: No data from imu_upper_joint"
+    if error_mssg_flag & 0x4000 == 0x4000:
+        mssg = mssg+"Error: No data from imu_pitch_roll"
+    if error_mssg_flag & 0x8000 == 0x8000:
+        mssg = mssg+"Error: No data from Magnetometer Turn Table"
+    if error_mssg_flag == 0x0000:
+        mssg = mssg+"No errors detected"
+    return mssg
 
-
-def chmsg(status):
-    if error_mssg_flag & 0x0001:
-        print("Error: Corrupt SBUS Packet")
-    if error_mssg_flag & 0x0002:
-        print("Error: COBS Decode Failed")
-    if error_mssg_flag & 0x0003:
-        print("Error: Message from Latte Panda is corrupt")
-    if error_mssg_flag & 0x0004:
-        print("Error: COBS Encoding Failed")
-    if error_mssg_flag & 0x0008:
-        print("Error: Unable to write PWM pulse to Left Motor")
-    if error_mssg_flag & 0x0010:
-        print("Error: Unable to write PWM pulse to Right Motor")
-    if error_mssg_flag & 0x0020:
-        print("Error: Unable to write Linear Actuator (Channel 2)")
-    if error_mssg_flag & 0x0040:
-        print("Error: Unable to write Linear Actuator (Channel 3)")
-    if error_mssg_flag & 0x0080:
-        print("Error: Unable to write Gripper/Bio-Arm")
-    if error_mssg_flag & 0x0100:
-        print("Error: Unable to write Mini-Actuator/Ogger")
-    if error_mssg_flag & 0x0200:
-        print("Error: Unable to write Cache-Box Servo")
-    if error_mssg_flag & 0x0300:
-        print("Error: Unable to write Microscope Servo")
-    if error_mssg_flag & 0x0400:
-        print("Error: Unable to write Pan Servo")
-    if error_mssg_flag & 0x0800:
-        print("Error: Unable to write Tilt Servo")
-    if error_mssg_flag & 0x1000:
-        print("Error: No data from IMU Pitch Roll")
-    if error_mssg_flag & 0x2000:
-        print("Error: No data from Magnetometer Turn Table")
-    if error_mssg_flag == 0:
-        print("No errors detected.")
 
 def process(encoded_msg):
+    lat = None
+    lon = None
+    if (encoded_msg[-1] != 0):
+        print("COBS ERROR: mssg does not have end byte")
+        return
+    decoded_msg = cobs.decode(encoded_msg[:-1])
+    crc = int.from_bytes(decoded_msg[-1:-5:-1], "big")
+    valid_crc = zlib.crc32(decoded_msg[:len(decoded_msg)-4])
+    if (crc != valid_crc):
+        print("ERROR: Mssg is corrupt crc did not match")
+        return
 
-    decoded_msg = cobs.decode(encoded_msg)
-    crc = struct.unpack('<I', decoded_msg[-4:])[0]
-    if(crc!= calccrc(decoded_msg[-4])):
-        raise ValueError("crc didnt matched")
-    gps_msg  = decoded_msg[:100]
-    accel, compass, msg_status, _ = struct.unpack('<ddII', decoded_msg[100:128])
-    decoded_gps=gpsubx(gps_msg)
-    chmsg(msg_status)
+    try:
+        gps_msg = UBXReader.parse(decoded_msg[:100])
+        if gps_msg.identity == "NAV-PVT":
+            lat = gps_msg.lat / 1e7
+            lon = gps_msg.lon / 1e7
+            print(f"Latitude: {lat}, Longitude: {lon}")
+        else:
+            print(f"Other message received: {gps_msg.identity}")
+
+    except Exception as e:
+        print(f"error reading:{e}")
+
+    print(decoded_msg)
+    error_mssg = chmsg((int.from_bytes(decoded_msg[100:102], "big")))
 
     return {
-            "gps_msg":decoded_gps,
-            "accel":accel,
-            "compass":compass,
-            "msg_status":msg_status,
-            "crc":True
-        }
+        "latitude": lat,
+        "longitude": lon,
+        "msg_status": error_mssg,
+    }
+
 
 def main():
-    ser=serial.Serial('PORT',baudrate=9600,timeout=1)
-    raw_data = ser.read(64)
-    if raw_data:
+
+    ser = serial.Serial(
+        "/dev/serial/by-id/usb-ZEPHYR_Team_RUDRA_Tarzan_3339511100350023-if00", baudrate=9600, timeout=1)
+    while True:
         try:
-            result=process(raw_data)
-            print("Decoded msg")
-            print(result)
-            socket.send_string(result)
+            raw_data = ser.read(110)
         except Exception as e:
-            print(f"error publishing:{e}")
+            print(f"error reading:{e}")
+        if raw_data:
+            try:
+            result = process(raw_data)
+            print("result is : ", result)
+            socket.send_string(result)
+            except Exception as e:
+                print(f"error publishing:{e}")
+            time.sleep(0.001)
+
 
 if __name__ == "__main__":
     main()
-
