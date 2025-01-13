@@ -2,7 +2,6 @@ import serial
 import time
 from pyubx2 import UBXReader
 from cobs import cobs
-import binascii
 import zlib
 import zmq
 import ctypes
@@ -18,14 +17,6 @@ class BaseStation(ctypes.Structure):
         ("error_mssg_flag", ctypes.c_uint16),
         ("crc", ctypes.c_uint32),
     ]
-
-
-def gpsubx(ubx_data):
-    try:
-        stream = UBXReader.parse(ubx_data)
-        return stream
-    except Exception as e:
-        print(f"error publishing:{e}")
 
 
 def chmsg(error_mssg_flag):
