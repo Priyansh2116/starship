@@ -1,4 +1,6 @@
 zmq
 opencv-python
-matplotlib
+cobs
+pyubx2
+
 

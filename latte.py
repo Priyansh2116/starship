@@ -7,9 +7,17 @@ import zlib
 import zmq
 import ctypes
 
-# context = zmq.Context()
-# socket = context.socket(zmq.PUB)
-# socket.bind("tcp://*:5556")
+context = zmq.Context()
+socket = context.socket(zmq.PUB)
+socket.bind("tcp://*:5556")
+
+
+class BaseStation(ctypes.Structure):
+    _fields_ = [
+        ("gps", ctypes.c_char*100),
+        ("error_mssg_flag", ctypes.c_uint16),
+        ("crc", ctypes.c_uint32),
+    ]
 
 
 def gpsubx(ubx_data):
@@ -62,30 +70,33 @@ def chmsg(error_mssg_flag):
 def process(encoded_msg):
     lat = None
     lon = None
+
     if (encoded_msg[-1] != 0):
         print("COBS ERROR: mssg does not have end byte")
         return
+
     decoded_msg = cobs.decode(encoded_msg[:-1])
-    crc = int.from_bytes(decoded_msg[-1:-5:-1], "big")
+    base_station_mssg = ctypes.cast(decoded_msg, ctypes.POINTER(BaseStation))
+
+    # checking crc
+    crc = base_station_mssg.contents.crc
     valid_crc = zlib.crc32(decoded_msg[:len(decoded_msg)-4])
     if (crc != valid_crc):
         print("ERROR: Mssg is corrupt crc did not match")
         return
-
+    # decoding gps
     try:
         gps_msg = UBXReader.parse(decoded_msg[:100])
         if gps_msg.identity == "NAV-PVT":
             lat = gps_msg.lat / 1e7
             lon = gps_msg.lon / 1e7
-            print(f"Latitude: {lat}, Longitude: {lon}")
         else:
             print(f"Other message received: {gps_msg.identity}")
 
     except Exception as e:
         print(f"error reading:{e}")
-
-    print(decoded_msg)
-    error_mssg = chmsg((int.from_bytes(decoded_msg[100:102], "big")))
+    # checking error mssg
+    error_mssg = chmsg(base_station_mssg.contents.error_mssg_flag)
 
     return {
         "latitude": lat,
@@ -105,12 +116,11 @@ def main():
             print(f"error reading:{e}")
         if raw_data:
             try:
-            result = process(raw_data)
-            print("result is : ", result)
-            socket.send_string(result)
+                result = process(raw_data)
+                print("result is : ", result)
+                socket.send_string(result)
             except Exception as e:
                 print(f"error publishing:{e}")
-            time.sleep(0.001)
 
 
 if __name__ == "__main__":

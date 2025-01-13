@@ -1,64 +1,80 @@
-import zmq
 import time
 import random
-import cv2
+import zmq
 import base64
-import numpy as np
+import socket
+import json
+import csv
+from datetime import datetime
+
+def gpsincsv():
+    filename = f"gps_data_{datetime.now().strftime('%H%M%S')}.csv"
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Timestamp', 'Latitude', 'Longitude'])
+    return filename
+
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:5555")
-path = "1.png"
-frame1 = cv2.imread(path)
-camera = cv2.VideoCapture(0)
-lastspeed = time.time()
-lastcompassupdate = time.time()
-lastgasupdate = time.time()
-lastspectroscopyupdate = time.time()
 
-def generate_spectroscopy(frame):
-    grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
-    spectrum = np.sum(grayscale, axis=0)  # Sum pixel intensities along columns
-    spectrum = spectrum / np.max(spectrum)  # Normalize to range [0, 1]
-    return spectrum.tolist()
-spectrum = generate_spectroscopy(frame1)
-print(f"Publishing spectroscopy data: {spectrum[:10]}...")  # Show first 10 values
-socket.send_string(f"spectroscopy {spectrum[:10]}")
+sub_socket= context.socket(zmq.SUB)
+sub_socket.connect("tcp://127.0.0.1:5556")
+sub_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+
+pullsensor = zmq.Poller()
+pullsensor.register(sub_socket , zmq.POLLIN)
+
+csv_filename = gpsincsv()
+print(f"CSV file created: {csv_filename}")
+
+def parse(message_str):
+    try:
+        message_dict = json.loads(message_str)
+        return {
+            'latitude': message_dict.get('latitude'),
+            'longitude': message_dict.get('longitude'),
+            'msg_status': message_dict.get('msg_status')
+        }
+    except Exception as e:
+        print(f"Error parsing: {e}")
+        return None
+
 while True:
 
-    ret, frame = camera.read()
-    if ret:
-        _, buffer = cv2.imencode('.jpg', frame)
-        frame_encoded = base64.b64encode(buffer).decode('utf-8')
-        print("Publishing camera frame")
-        socket.send_string(f"camera {frame_encoded}")
-
-    currenttime = time.time()
-
- 
-    if currenttime-lastspeed >= 0.5:
+    try:
+        current_time = datetime.now().strftime('%H:%M:%S.%f')[:-3]
         speed = random.randint(0, 180)
         print(f"Publishing speed: {speed}")
         socket.send_string(f"speed {speed}")
-        lastspeed = currenttime
 
-    
-    if currenttime-lastcompassupdate >= 0.5:
         compass = random.uniform(0, 360)
         print(f"Publishing compass: {compass:.2f}")
         socket.send_string(f"compass {compass:.2f}")
-        lastcompassupdate = currenttime
 
-    if currenttime-lastgasupdate >= 0.5:
-        gasvalue = random.randint(0, 60)
-        print(f"Publishing gasvalue: {gasvalue}")
-        socket.send_string(f"gasvalue {gasvalue}")
-        lastgasupdate = currenttime
+        socks=dict(pullsensor.poll(1))
+        if sub_socket in socks and socks[sub_socket] == zmq.POLLIN:
+            message = sub_socket.recv_string()
+            parsed_msg = parse(message)
+        if parsed_msg:
+            json_message  = json.dumps(parsed_msg)
+            socket.send_string(json_message)
+            lat = parsed_msg['latitude']
+            lon = parsed_msg['longitude']
+            print(f"Latitude: {parsed_msg['latitude']}")
+            print(f"Longitude: {parsed_msg['longitude']}")
+            print(f"Status: {parsed_msg['msg_status']}")
+            with open(csv_filename, 'a', newline='') as file:
+                        writer = csv.writer(file)
+                        writer.writerow([
+                            current_time,
+                            lat,
+                            lon
+                        ])
 
-    if currenttime-lastspectroscopyupdate >=5.0:
-        if ret:
-              spectrum = generate_spectroscopy(frame1)
-              print(f"Publishing spectroscopy data: {spectrum[:10]}...")  # Show first 10 values
-              socket.send_string(f"spectroscopy {spectrum[:10]}")
-              lastspectroscopyupdate = currenttime
 
-    time.sleep(0.01)
+
+        time.sleep(0.01)
+
+    except Exception as e:
+        print(f"error receiving:{e}")
