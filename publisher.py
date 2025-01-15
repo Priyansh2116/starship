@@ -19,7 +19,7 @@ socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:5555")
 
 sub_socket= context.socket(zmq.SUB)
-sub_socket.connect("tcp://127.0.0.1:5556")
+sub_socket.connect("tcp://192.168.70.9:5556")
 sub_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
 pullsensor = zmq.Poller()
@@ -35,6 +35,10 @@ def parse(message_str):
             'latitude': message_dict.get('latitude'),
             'longitude': message_dict.get('longitude'),
             'msg_status': message_dict.get('msg_status')
+            'height': message_dict.get('height')
+            'numSV': message_dict.get('numSV')
+
+
         }
     except Exception as e:
         print(f"Error parsing: {e}")
@@ -64,6 +68,9 @@ while True:
             print(f"Latitude: {parsed_msg['latitude']}")
             print(f"Longitude: {parsed_msg['longitude']}")
             print(f"Status: {parsed_msg['msg_status']}")
+            print(f"height: {parsed_msg['height']}")
+            print(f"numsv: {parsed_msg['numSV']}")
+
             with open(csv_filename, 'a', newline='') as file:
                         writer = csv.writer(file)
                         writer.writerow([

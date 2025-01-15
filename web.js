@@ -42,7 +42,7 @@ function parseGPSData(message) {
         try {
             const gpsData = parseGPSData(msgString);
             if (gpsData) {
-                console.log(`Received GPS - Lat: ${gpsData.latitude}, Lon: ${gpsData.longitude}`);
+                console.log(`Received GPS - Lat: ${gpsData.latitude}, Lon: ${gpsData.longitude}, height: ${gpsData.height},numSV: ${gpsData.numSV}`);
                 console.log(`Status: ${gpsData.status}`);
                 
                 broadcastToClients({
@@ -50,6 +50,8 @@ function parseGPSData(message) {
                     data: {
                         latitude: gpsData.latitude,
                         longitude: gpsData.longitude,
+                        height: gpsData.height,
+                        numSV: gpsData.numSV,
                         status: gpsData.status
                     }
                 });

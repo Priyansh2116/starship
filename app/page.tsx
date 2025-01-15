@@ -5,6 +5,8 @@ import Compass from '../components/Compass';
 import StatusDisplay from '../components/msgstatus';
 import LatitudeDisplay from '../components/latitude';
 import LongitudeDisplay from '../components/longitude';
+import HeightDisplay from '../components/height';
+import numSVDisplay from '../components/nmsv';
 
 const DashboardPage: React.FC = () => {
   return (
@@ -42,6 +44,22 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+         <div className="grid grid-cols-2 gap-4">
+          <div className="bg-gray-1000 rounded-lg shadow-md p-4">
+            <label className="text-gray-500">height</label>
+            <div className="mt-2">
+              <HeightDisplay />
+            </div>
+          </div>
+          <div className="bg-gray-1000 rounded-lg shadow-md p-4">
+            <label className="text-gray-500">numSV</label>
+            <div className="mt-2">
+               <numSVDisplay />
+            </div>
+          </div>
+        </div>
+
 
         {/* Instruments Grid */}
         <div className="grid grid-cols-3 gap-8 mt-8">

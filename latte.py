@@ -5,6 +5,7 @@ from cobs import cobs
 import zlib
 import zmq
 import ctypes
+import json
 
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
@@ -58,15 +59,24 @@ def chmsg(error_mssg_flag):
     return mssg
 
 
-def process(encoded_msg):
+def process(encoded_msg,ser):
     lat = None
     lon = None
+    height = None
+    numSV = None
 
     if (encoded_msg[-1] != 0):
         print("COBS ERROR: mssg does not have end byte")
         return
+    if encoded_msg[-1] != 0:
+        for i, v in enumerate(map(int, encoded_msg)):
+            if v == 0x00:
+                kcd = ser.read(i+1)
+                temp = encoded_msg[i+1:]
+                encoded_msg = temp + kcd
+                break
 
-    decoded_msg = cobs.decode(encoded_msg[:-1])
+    decoded_msg = cobs.decode(encoded_msg[:-2])
     base_station_mssg = ctypes.cast(decoded_msg, ctypes.POINTER(BaseStation))
 
     # checking crc
@@ -79,8 +89,10 @@ def process(encoded_msg):
     try:
         gps_msg = UBXReader.parse(decoded_msg[:100])
         if gps_msg.identity == "NAV-PVT":
-            lat = gps_msg.lat / 1e7
-            lon = gps_msg.lon / 1e7
+            lat = gps_msg.lat
+            lon = gps_msg.lon
+            height = gps_msg.hMSL
+            numSV = gps_msg.numSV
         else:
             print(f"Other message received: {gps_msg.identity}")
 
@@ -92,6 +104,8 @@ def process(encoded_msg):
     return {
         "latitude": lat,
         "longitude": lon,
+        "height":height,
+        "numSV": numSV,
         "msg_status": error_mssg,
     }
 
@@ -107,9 +121,10 @@ def main():
             print(f"error reading:{e}")
         if raw_data:
             try:
-                result = process(raw_data)
+                raw_data_with = raw_data + b'\x00'
+                result = process(raw_data_with,ser)
                 print("result is : ", result)
-                socket.send_string(result)
+                socket.send_string(json.dumps(result))
             except Exception as e:
                 print(f"error publishing:{e}")
 
