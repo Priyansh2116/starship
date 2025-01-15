@@ -19,7 +19,7 @@ socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:5555")
 
 sub_socket= context.socket(zmq.SUB)
-sub_socket.connect("tcp://192.168.70.9:5556")
+sub_socket.connect("tcp://192.168.153.96:5556")
 sub_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
 pullsensor = zmq.Poller()

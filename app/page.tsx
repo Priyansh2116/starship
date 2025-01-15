@@ -6,7 +6,7 @@ import StatusDisplay from '../components/msgstatus';
 import LatitudeDisplay from '../components/latitude';
 import LongitudeDisplay from '../components/longitude';
 import HeightDisplay from '../components/height';
-import numSVDisplay from '../components/nmsv';
+import NumSVDisplay from '../components/nmsv';
 
 const DashboardPage: React.FC = () => {
   return (
@@ -55,7 +55,7 @@ const DashboardPage: React.FC = () => {
           <div className="bg-gray-1000 rounded-lg shadow-md p-4">
             <label className="text-gray-500">numSV</label>
             <div className="mt-2">
-               <numSVDisplay />
+               <NumSVDisplay />
             </div>
           </div>
         </div>

@@ -25,6 +25,8 @@ function parseGPSData(message) {
         return {
             latitude: data.latitude,
             longitude: data.longitude,
+            height: data.height,
+            numSV: data.numSV,
             status: data.msg_status
         };
     } catch (error) {
