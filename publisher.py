@@ -34,11 +34,9 @@ def parse(message_str):
         return {
             'latitude': message_dict.get('latitude'),
             'longitude': message_dict.get('longitude'),
-            'msg_status': message_dict.get('msg_status')
-            'height': message_dict.get('height')
+            'msg_status': message_dict.get('msg_status'),
+            'height': message_dict.get('height'),
             'numSV': message_dict.get('numSV')
-
-
         }
     except Exception as e:
         print(f"Error parsing: {e}")
