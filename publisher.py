@@ -46,6 +46,7 @@ while True:
 
     try:
         current_time = datetime.now().strftime('%H:%M:%S.%f')[:-3]
+        '''
         speed = random.randint(0, 180)
         print(f"Publishing speed: {speed}")
         socket.send_string(f"speed {speed}")
@@ -53,7 +54,7 @@ while True:
         compass = random.uniform(0, 360)
         print(f"Publishing compass: {compass:.2f}")
         socket.send_string(f"compass {compass:.2f}")
-
+        '''
         socks=dict(pullsensor.poll(1))
         if sub_socket in socks and socks[sub_socket] == zmq.POLLIN:
             message = sub_socket.recv_string()

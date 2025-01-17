@@ -32,7 +32,7 @@ const NumSVDisplay = () => {
         </div>
       </div>
       <div className="text-sm text-white mt-2">
-        {numSV !== null ? 'Live data' : 'No data'}
+        {numSV !== null ? 'Live data' : 'data'}
       </div>
     </div>
   );
