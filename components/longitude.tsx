@@ -3,18 +3,26 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 const LongitudeDisplay = () => {
   const [longitude, setLongitude] = useState<number | null>(null);
+  const [isUpdated, setIsUpdated] = useState(true);
 
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
       const data = JSON.parse(event.data);
-      if (data.type === 'gps' && data.data?.longitude != null) {
+      
+      if (data.type === 'gps' && !data.data?.longitude) {
+        setIsUpdated(false);
+        return;
+      }
+
+      if (data.type === 'gps' && data.data?.longitude) {
         const newLongitude = Number(data.data.longitude);
         if (!isNaN(newLongitude)) {
           setLongitude(newLongitude);
+          setIsUpdated(true);
         }
       }
     } catch (error) {
-      console.error('Error processing GPS data:', error);
+      setIsUpdated(false);
     }
   }, []);
 
@@ -35,7 +43,9 @@ const LongitudeDisplay = () => {
           {longitude !== null ? longitude.toFixed(6) : '--'}°
         </div>
       </div>
-      <div className="text-sm text-white mt-2">Live data</div>
+      <div className="text-sm text-white mt-2">
+        {longitude === null ? 'No data' : isUpdated ? 'Live data' : 'Updated earlier'}
+      </div>
     </div>
   );
 };
