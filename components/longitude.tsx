@@ -1,21 +1,31 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const LongitudeDisplay = () => {
   const [longitude, setLongitude] = useState<number | null>(null);
 
+  const handleMessage = useCallback((event: MessageEvent) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === 'gps' && data.data?.longitude != null) {
+        const newLongitude = Number(data.data.longitude);
+        if (!isNaN(newLongitude)) {
+          setLongitude(newLongitude);
+        }
+      }
+    } catch (error) {
+      console.error('Error processing GPS data:', error);
+    }
+  }, []);
+
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8786');
+    ws.onmessage = handleMessage;
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'gps') {
-        setLongitude(data.data.longitude);
-      }
+    return () => {
+      ws.close();
     };
-
-    return () => ws.close();
-  }, []);
+  }, [handleMessage]);
 
   return (
     <div className="p-4 bg-gray-1000 rounded-lg shadow-md">
@@ -25,9 +35,7 @@ const LongitudeDisplay = () => {
           {longitude !== null ? longitude.toFixed(6) : '--'}°
         </div>
       </div>
-      <div className="text-sm text-white mt-2">
-        {longitude !== null ? 'Live data' : 'data'}
-      </div>
+      <div className="text-sm text-white mt-2">Live data</div>
     </div>
   );
 };
