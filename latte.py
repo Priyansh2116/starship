@@ -113,7 +113,7 @@ def process(encoded_msg,ser):
 def main():
 
     ser = serial.Serial(
-        "/dev/serial/by-id/usb-ZEPHYR_Team_RUDRA_Tarzan_3339511100350023-if00", baudrate=9600, timeout=1)
+        "/dev/serial/by-id/usb-ZEPHYR_Team_RUDRA_Tarzan_3339511100350023-if00", baudrate=9600, timeout=1, exclusive=False)
     while True:
         try:
             raw_data = ser.read(110)
