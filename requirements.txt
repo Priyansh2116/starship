@@ -2,5 +2,5 @@ zmq
 opencv-python
 cobs
 pyubx2
-
+os-sys
 
