@@ -6,7 +6,7 @@ import zlib
 import zmq
 import ctypes
 import json
-
+import sys
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:5556")
@@ -59,7 +59,7 @@ def chmsg(error_mssg_flag):
     return mssg
 
 
-def process(encoded_msg,ser):
+def process(encoded_msg, ser):
     lat = None
     lon = None
     height = None
@@ -104,16 +104,15 @@ def process(encoded_msg,ser):
     return {
         "latitude": lat,
         "longitude": lon,
-        "height":height,
+        "height": height,
         "numSV": numSV,
         "msg_status": error_mssg,
     }
 
 
 def main():
-
-    ser = serial.Serial(
-        "/dev/serial/by-id/usb-ZEPHYR_Team_RUDRA_Tarzan_3339511100350023-if00", baudrate=9600, timeout=1, exclusive=False)
+    port = sys.argv[1]
+    ser = serial.Serial(port, baudrate=9600, timeout=1, exclusive=False)
     while True:
         try:
             raw_data = ser.read(110)
@@ -122,7 +121,7 @@ def main():
         if raw_data:
             try:
                 raw_data_with = raw_data + b'\x00'
-                result = process(raw_data_with,ser)
+                result = process(raw_data_with, ser)
                 print("result is : ", result)
                 socket.send_string(json.dumps(result))
             except Exception as e:
